@@ -22,7 +22,7 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
 @keyframes pulse{50%{opacity:.35}}
 #stage{position:fixed;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:14px;opacity:0;transition:opacity 1.2s}
 #stage.on{opacity:1}
-.card{position:absolute;width:min(94vw,640px);height:min(82vh,640px);background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1' cy='1' r='.5' fill='%23c9a98a' opacity='.25'/%3E%3C/svg%3E");border-radius:10px;box-shadow:0 25px 70px #000b,0 0 0 1px #d9a85b55 inset;padding:30px 26px 56px;display:flex;flex-direction:column;align-items:center;text-align:center;opacity:0;transform:translateX(40px) rotateY(-12deg);pointer-events:none;transition:all .8s cubic-bezier(.2,.8,.2,1);overflow:hidden}
+.card{position:absolute;width:min(94vw,640px);height:min(82vh,640px);background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1' cy='1' r='.5' fill='%23c9a98a' opacity='.25'/%3E%3C/svg%3E");border-radius:10px;box-shadow:0 25px 70px #000b,0 0 0 1px #d9a85b55 inset;padding:30px 26px 56px;display:flex;flex-direction:column;align-items:center;text-align:center;opacity:0;transform:translateX(40px) rotateY(-12deg);pointer-events:none;transition:all .8s cubic-bezier(.2,.8,.2,1);overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding-bottom:96px}
 .card.show{opacity:1;transform:none;pointer-events:auto}
 .card.past{transform:translateX(-40px) rotateY(12deg)}
 .card h2{font-size:2.3rem;color:var(--rose);margin-bottom:10px;font-weight:400}
@@ -67,6 +67,11 @@ canvas{position:fixed;inset:0;pointer-events:none;z-index:1}
 #fin span{display:block;font-size:.7em;margin-top:6px;color:#d4b0ff}
 #snd{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:8;width:40px;height:40px;border-radius:50%;border:1px solid var(--gold);background:#0006;color:#fff;font-size:1.1rem;cursor:pointer;display:none}
 #snd.on{display:block}
+.card>*{flex-shrink:0}
+.card #garden{min-height:260px}
+#tul{overflow:hidden!important;padding-bottom:calc(64px + env(safe-area-inset-bottom))!important}
+#tul>*{flex-shrink:1}
+.card::-webkit-scrollbar{width:6px}.card::-webkit-scrollbar-thumb{background:#c2456b55;border-radius:3px}
 </style>
 </head>
 <body>
@@ -137,8 +142,8 @@ function go(i){
   $('#prev').disabled=cur===0;$('#next').disabled=cur===cards.length-1;
 }
 $('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
-let sx=0;addEventListener('touchstart',e=>sx=e.touches[0].clientX);
-addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>70&&!e.target.closest('#garden'))go(cur+(d<0?1:-1))});
+let sx=0,sy=0;addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY});
+addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(d)>70&&Math.abs(d)>Math.abs(dy)*1.5&&!e.target.closest('#garden'))go(cur+(d<0?1:-1))});
 addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1)});
 const bg=$('#bg');bg.volume=0;
 function fadeIn(){let v=0;const t=setInterval(()=>{v=Math.min(.8,v+.04);bg.volume=v;if(v>=.8)clearInterval(t)},150)}
